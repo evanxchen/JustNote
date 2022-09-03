@@ -1,4 +1,4 @@
-# **時間序列**   V2.0
+# **時間序列**  
 > ### Tutorials ：
 * [李宏毅－about AutoDecoders](https://hackmd.io/@overkill8927/SyyCBk3Mr?type=view#25-Unsupervised-Learning---Auto-EncoderDecoder)
 * [LSTM 自编码器的温和介绍](https://github.com/apachecn/ml-mastery-zh/blob/master/docs/lstm/lstm-autoencoders.md)
@@ -22,6 +22,73 @@
 
   - The Granger Causality test is used to determine whether or not one time series is useful for forecasting another.
 
+```python
+import numpy as np
+import pandas as pd
+import datetime
+from sklearn.preprocessing import StandardScaler
+from statsmodels.tsa.stattools import grangercausalitytests
+import statsmodels.api as sm
+import seaborn as sns
+
+import warnings
+warnings.filterwarnings('ignore')
+
+pd.set_option('display.max_columns', 100)
+```
+
+```python
+fb_sent = pd.read_csv('./data/fb_sent/fb_sent.csv')
+snownlp_sent = pd.read_csv('./data/snownlp_sent/snownlp_sent.csv')
+deepnltk = pd.read_csv('./data/deeplnltk/deeplnltk_proc.csv')
+baidu_sent = pd.read_csv('./data/baidu_sent/baidu_sent_proc2.csv')
+```
+```python
+sentiment = pd.merge(left=fb_sent, right=snownlp_sent, how='left', on='DATE')
+sentiment = pd.merge(left=sentiment, right=deepnltk, how='left', on='DATE')
+sentiment = pd.merge(left=sentiment, right=baidu_sent, how='left', on='DATE')
+
+sentiment
+```
+```python
+df = df.loc[df['DATE'].apply(lambda x: '2021-10-01' <= x <= '2022-03-31')]
+df = df.set_index('DATE')
+std = StandardScaler()
+df = pd.DataFrame(std.fit_transform(df), columns=df.columns, index=df.index)
+df
+```
+```python
+#perform Granger-Causality test
+print('======================= LIKE =======================')
+result = grangercausalitytests(df[['CLOSING_INDEX', 'LIKE']], maxlag=5)
+print('======================= HAHA =======================')
+result = grangercausalitytests(df[['CLOSING_INDEX', 'HAHA']], maxlag=5)
+print('======================= LOVE =======================')
+result = grangercausalitytests(df[['CLOSING_INDEX', 'LOVE']], maxlag=5)
+print('======================= WOW========================')
+result = grangercausalitytests(df[['CLOSING_INDEX', 'WOW']], maxlag=5)
+print('======================= CARE =======================')
+result = grangercausalitytests(df[['CLOSING_INDEX', 'CARE']], maxlag=5)
+print('======================= ANGRY =======================')
+result = grangercausalitytests(df[['CLOSING_INDEX', 'ANGRY']], maxlag=5)
+print('======================= SAD =======================')
+result = grangercausalitytests(df[['CLOSING_INDEX', 'SAD']], maxlag=5)
+
+print('======================= SnowNLP_sent =======================')
+result = grangercausalitytests(df[['CLOSING_INDEX', 'SnowNLP_sent']], maxlag=5)
+
+print('======================= DEEPNLTK_NEG =======================')
+result = grangercausalitytests(df[['CLOSING_INDEX', 'DEEPNLTK_NEG']], maxlag=5)
+print('======================= DEEPNLTK_POS =======================')
+result = grangercausalitytests(df[['CLOSING_INDEX', 'DEEPNLTK_POS']], maxlag=5)
+
+print('======================= BAIDU_NEG =======================')
+result = grangercausalitytests(df[['CLOSING_INDEX', 'BAIDU_NEG']], maxlag=5)
+print('======================= BAIDU_POS =======================')
+result = grangercausalitytests(df[['CLOSING_INDEX', 'BAIDU_POS']], maxlag=5)
+
+```
+
 
 ***
 
@@ -29,9 +96,9 @@
 
 | samples data | variables | method| Aim |examples
 | :--:| :--: | :--:| :-------:|  :-----:|
-| multiple inputs / parellel inputs | univariate | autoencoder + MLP regression |predict future value per sample individually |-[store sales predictions](https://www.kaggle.com/code/dimitreoliveira/time-series-forecasting-with-lstm-autoencoders/notebook)   <br />[Web Traffic Time Series Forecasting](https://www.kaggle.com/code/ganeshhalpatrao/web-traffic-time-series-forecasting)
+| multiple inputs / parellel inputs | univariate | autoencoder + MLP regression |predict future value per sample individually |[store sales predictions](https://www.kaggle.com/code/dimitreoliveira/time-series-forecasting-with-lstm-autoencoders/notebook)   <br />[Web Traffic Time Series Forecasting](https://www.kaggle.com/code/ganeshhalpatrao/web-traffic-time-series-forecasting)
 | One input| multiivariate | CNN.autoencoder + keras.LSTM| predict future value with given multiple variables into concerns| [LSTM Models for multi-step time series forcast](https://www.kaggle.com/code/kcostya/lstm-models-for-multi-step-time-series-forecast#ConvLSTM-Encoder-Decoder-Model-With-Multivariate-Input) <br /> [CNN-LSTM-Based Models for Multiple Parallel Input and Multi-Step Forecast](https://towardsdatascience.com/cnn-lstm-based-models-for-multiple-parallel-input-and-multi-step-forecast-6fe2172f7668) <br /> [使用 LSTM 进行多变量时间序列预测的保姆级教程](https://avoid.overfit.cn/post/1a36216705f2441b80fca567ea61e365)
-｜multiple inputs|multivariate|autoencoder+regression|to predict values next step per sample concerning multivariate variables| [stackoverflow QAs](https://stackoverflow.com/questions/60732647/how-to-have-keras-lstm-make-predictions-for-multiple-time-series-in-a-multivaria)<br />[stackOverflow QAs](https://stackoverflow.com/questions/65144346/feeding-multiple-inputs-to-lstm-for-time-series-forecasting-using-pytorch)
+multiple inputs|multivariate|autoencoder+regression|to predict values next step per sample concerning multivariate variables| [stackoverflow QAs](https://stackoverflow.com/questions/60732647/how-to-have-keras-lstm-make-predictions-for-multiple-time-series-in-a-multivaria)<br />[stackOverflow QAs](https://stackoverflow.com/questions/65144346/feeding-multiple-inputs-to-lstm-for-time-series-forecasting-using-pytorch)
 |multiple inputs| multivariate| autoencoder+clustering| to cluster the patterns| [Ｔimes Series clustering and dimensions reduction](https://towardsdatascience.com/time-series-clustering-and-dimensionality-reduction-5b3b4e84f6a3)
 |multiple inputs | univariate|  | classification for next moves |[Early Event Detection in Power Lines](https://www.kaggle.com/code/shitalborganve/early-event-detection-in-power-lines/notebook) 
 |multiple inputs| univariate| Prophet | anomaly detections|[real time anomaly detections using prophet](https://www.kaggle.com/code/vigneshvdas/real-time-anomaly-detection-using-prophet) <br /> [peak identification](https://www.kaggle.com/code/johnowhitaker/peak-identification/notebook) <br /> [pytoch anomaly detections](https://curiousily.com/posts/time-series-anomaly-detection-using-lstm-autoencoder-with-pytorch-in-python/)
