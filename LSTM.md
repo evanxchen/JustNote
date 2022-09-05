@@ -18,7 +18,7 @@
 
 ---
 
-* ## 因果關係檢定
+* ## 時序上的因果關係檢定
 
   - The Granger Causality test is used to determine whether or not one time series is useful for forecasting another.
 
@@ -88,6 +88,9 @@ print('======================= BAIDU_POS =======================')
 result = grangercausalitytests(df[['CLOSING_INDEX', 'BAIDU_POS']], maxlag=5)
 
 ```
+---
+* ## **Augmented Dickey-Fuller Test for stationary**
+   >[檢定自相關程度高低](https://www.kaggle.com/code/galibce003/stationarity-and-dickey-fuller-test-with-example/notebook)
 
 
 ***
